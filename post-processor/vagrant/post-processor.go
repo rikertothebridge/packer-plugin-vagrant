@@ -141,7 +141,12 @@ func (p *PostProcessor) PostProcessProvider(name string, provider Provider, ui p
 	}
 
 	// Create a temporary directory for us to build the contents of the box in
-	dir, err := tmp.Dir("packer")
+	var dir = ""
+	if envDir := os.Getenv("PACKER_TEMP_DIR"); envDir != "" {
+		dir, err = os.MkdirTemp(envDir, "packer")
+	} else {
+		dir, err = tmp.Dir("packer")
+	}
 	if err != nil {
 		return nil, false, err
 	}
